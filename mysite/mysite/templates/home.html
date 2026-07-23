@@ -1,0 +1,554 @@
+{% extends "users/basic.html" %} {% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Outfit', "Arial", sans-serif;
+      background-color: #0f172a; /* Sleek dark-mode background */
+      color: #f1f5f9;
+    }
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 40px 0 25px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #3b82f6;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+    }
+    .section-title::after {
+      content: '';
+      flex-grow: 1;
+      height: 1px;
+      background: linear-gradient(90deg, #3b82f6, transparent);
+      margin-left: 20px;
+    }
+    .card {
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      background-color: #1e293b;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .card-img-top {
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .card:hover .card-img-top {
+      transform: scale(1.06);
+    }
+    .card-body {
+      background-color: #1e293b;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff !important;
+      margin-bottom: 8px;
+      transition: color 0.3s;
+    }
+    .card:hover .card-title {
+      color: #60a5fa !important;
+    }
+    .card-text {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .carousel-item img {
+      object-fit: cover;
+      border-radius: 16px;
+    }
+    .carousel {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .carousel-caption {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      text-shadow: none;
+      text-align: left;
+      bottom: 30px;
+      left: 6%;
+      right: 6%;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+    .alert-info {
+      background-color: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+      border-radius: 12px;
+      padding: 15px 20px;
+    }
+    .alert-info .alert-link {
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .carousel-control-prev, .carousel-control-next {
+      width: 5%;
+    }
+    .badge-primary {
+      background-color: #3b82f6;
+    }
+    .badge-warning {
+      background-color: #f59e0b;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container {
+      animation: fadeInUp 0.8s ease-out;
+    }
+  </style>
+  
+  <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+      <li
+        data-target="#carouselExampleIndicators"
+        data-slide-to="0"
+        class="active"
+      ></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+      <!-- Populated Dynamically by Javascript -->
+      <div class="carousel-item active">
+        <div style="height: 350px; background-color: #1e293b; display: flex; align-items: center; justify-content: center;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading events...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a
+      class="carousel-control-prev"
+      href="#carouselExampleIndicators"
+      role="button"
+      data-slide="prev"
+    >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a
+      class="carousel-control-next"
+      href="#carouselExampleIndicators"
+      role="button"
+      data-slide="next"
+    >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+  
+  <div class="container mt-4">
+    {% if not user.is_authenticated %}
+    <div class="alert alert-info" role="alert">
+      <a href="{% url 'login' %}" class="alert-link">Login</a> or
+      <a href="{% url 'register' %}" class="alert-link">Register</a> to continue.
+    </div>
+    {% endif %}
+  
+    <div class="section-title">Recommended Movies</div>
+    <div class="row">
+      {% if movies %}
+      {% for movie in movies|slice:":4" %}
+      <div class="col-md-3 col-sm-6">
+        <a href="{% url 'theater_list' movie.id %}" class="text-decoration-none">
+          <div class="card h-100">
+            <img
+              src="{{ movie.image.url }}"
+              class="card-img-top"
+              alt="{{ movie.name }}"
+              height="300"
+            />
+            <div class="card-body d-flex flex-column justify-content-between">
+              <h5 class="card-title text-center">{{ movie.name }}</h5>
+              <p class="card-text text-center">{{ movie.description }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="col-12 text-center text-muted my-4">
+        <p>No recommended movies available at this moment.</p>
+      </div>
+      {% endif %}
+    </div>
+  
+    <div class="section-title">The Best of Live Events</div>
+    <div class="row" id="live-events-row">
+      <!-- Populated Dynamically by Javascript -->
+    </div>
+  
+    <div class="section-title">Premiere</div>
+    <div class="row" id="premiere-row">
+      <!-- Populated Dynamically by Javascript -->
+    </div>
+  
+    <div class="section-title">Your Music Studio</div>
+    <div class="row" id="music-studio-row">
+      <!-- Populated Dynamically by Javascript -->
+    </div>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Hover effects shadow highlight for movies
+      $(".card").hover(
+        function () {
+          $(this).addClass("shadow-lg").css("cursor", "pointer");
+        },
+        function () {
+          $(this).removeClass("shadow-lg");
+        }
+      );
+
+      // Pre-curated image content mapping for the 4 seasonal themes
+      const seasonalThemes = {
+        monsoon: {
+          name: "Summer & Monsoon Fest",
+          carousel: [
+            {
+              image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Sunburn Monsoon Arena 2026",
+              desc: "Experience the ultimate electronic music festival dancing in the rain!"
+            },
+            {
+              image: "https://images.unsplash.com/photo-1585699324551-f6c309eed262?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Laughter Unlimited: Stand-up Tour",
+              desc: "Catch your favorite stand-up comedians live in theater halls this season."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Rainforest International Film Festival",
+              desc: "Explore award-winning global cinema and exclusive indie screenings."
+            }
+          ],
+          liveEvents: [
+            { title: "Monsoon Rock Fest", badge: "Concerts", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Comedy Night Special", badge: "Standup", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd6a?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "The Shakespearean Tempest", badge: "Plays", image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Water Color & Craft Expo", badge: "Exhibitions", image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Organic Street Food Fest", badge: "Food & Drinks", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Neon Splash Kids Carnival", badge: "Activities", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&h=500&q=80" }
+          ],
+          premieres: [
+            { title: "Horizon: Nebula Odyssey", lang: "English / Sci-Fi", image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Parisian Summer Dreams", lang: "French / Romance", image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Shadows in the Mist", lang: "Hindi / Thriller", image: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Adventures of Bolt", lang: "Animated / Family", image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&h=600&q=80" }
+          ],
+          musicStudio: [
+            { title: "Acoustic Rain Sessions", artist: "Sarah & Friends", image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Neon Lights Beat Show", artist: "DJ Neon", image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Monsoon Jazz Club", artist: "The Jazz Quartet", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Grand Piano Concerto", artist: "Ludovico Tribute", image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "High-Voltage Rock Night", artist: "Thunderstrike", image: "https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Monsoon Rap Cypher", artist: "Street Hustlers", image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&h=500&q=80" }
+          ]
+        },
+        autumn: {
+          name: "Autumn & Festive Season",
+          carousel: [
+            {
+              image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Autumn Symphony & Lights",
+              desc: "Celebrate the magical festive light shows with gorgeous classical melodies."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Diwali Mahotsav Cultural Dance",
+              desc: "A stunning celebration of traditional classical and folk dance forms."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1508349937151-22b68b72d5b1?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Halloween Spooktacular Carnival",
+              desc: "Wear your spookiest costumes for interactive events and ghost stories!"
+            }
+          ],
+          liveEvents: [
+            { title: "Diwali Dandiya Night", badge: "Festivals", image: "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Halloween Costume Party", badge: "Parties", image: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Autumn Classics Theater", badge: "Plays", image: "https://images.unsplash.com/photo-1460881680858-30d872d5b530?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Spicy Street Food Fest", badge: "Food & Drinks", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Heritage Folk Dance", badge: "Dance", image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Sorcar Magic & Illusions", badge: "Activities", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&h=500&q=80" }
+          ],
+          premieres: [
+            { title: "The Silent Silhouette", lang: "Hindi / Thriller", image: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Whispers of the Woods", lang: "English / Fantasy", image: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Chronicles of the Dynasty", lang: "English / History", image: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Rainy Afternoon in London", lang: "English / Romance", image: "https://images.unsplash.com/photo-1518173946687-a4c8a383392f?auto=format&fit=crop&w=400&h=600&q=80" }
+          ],
+          musicStudio: [
+            { title: "Classical Fusion Jugalbandi", artist: "Pt. Sharma & Ustad Ali", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Retro Bollywood Jam", artist: "The Nostalgia Band", image: "https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Golden Leaves Acoustic", artist: "Arjun Sen", image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Echoes of Sufism", artist: "Wadali Ensemble", image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Fireside Ambient Sunset", artist: "DJ Breathe", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Synthwave Autumn Nights", artist: "Cyber Dreamer", image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&h=500&q=80" }
+          ]
+        },
+        winter: {
+          name: "Winter & Holiday Season",
+          carousel: [
+            {
+              image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Winter Arena EDM Fest",
+              desc: "Warm up this winter at the biggest indoor dance arena with world-famous electronic artists."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1531058020387-3be344559be6?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "New Year's Eve Countdown Gala",
+              desc: "Ring in the New Year with a spectacular countdown, live acts, and gourmet buffet."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Christmas Jingle & Joy Festival",
+              desc: "Enjoy christmas carols, festive markets, and holiday fun for the entire family!"
+            }
+          ],
+          liveEvents: [
+            { title: "Choral Christmas Concert", badge: "Concerts", image: "https://images.unsplash.com/photo-1513829096963-ec9fb23d7560?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "New Year Bash & Fireworks", badge: "Festivals", image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Winter Classics Ballet", badge: "Plays", image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Ice Sculpture Exhibition", badge: "Exhibitions", image: "https://images.unsplash.com/photo-1517299321909-5068713d326e?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Cozy Storytelling Evening", badge: "Activities", image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Winter Royale Circus", badge: "Kids / Activities", image: "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=400&h=500&q=80" }
+          ],
+          premieres: [
+            { title: "Cosmic Horizon: Ice Age", lang: "English / Sci-Fi", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "The Family Reunion", lang: "Hindi / Drama", image: "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Detective Frost's Case", lang: "English / Crime", image: "https://images.unsplash.com/photo-1485594050903-8e8ee7b071a8?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Castle of the White Knight", lang: "English / Fantasy", image: "https://images.unsplash.com/photo-1519074069444-1ba4ae167b1f?auto=format&fit=crop&w=400&h=600&q=80" }
+          ],
+          musicStudio: [
+            { title: "Warm Fireside Guitar", artist: "Leo Vance", image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Grand Symphony of Winter", artist: "Vienna Philharmonics", image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Blue Note Winter Jazz", artist: "The Sax Kings", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Winter Choir Harmony", artist: "Cathedral Choir", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd6a?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Rocking Frost Arena", artist: "Deep Freeze", image: "https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Chillhop Blanket Beats", artist: "Lofi Snowman", image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&h=500&q=80" }
+          ]
+        },
+        spring: {
+          name: "Spring Season",
+          carousel: [
+            {
+              image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Spring Rock Concert 2026",
+              desc: "Celebrate the arrival of spring with high-voltage rock and pop performances!"
+            },
+            {
+              image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Spring Flower & Food Festival",
+              desc: "Stroll through blooming gardens while savoring delicious organic street foods."
+            },
+            {
+              image: "https://images.unsplash.com/photo-1585699324551-f6c309eed262?auto=format&fit=crop&w=1240&h=350&q=80",
+              title: "Comedy Under the Blossom",
+              desc: "Experience outdoor stand-up comedy shows in beautifully decorated parks."
+            }
+          ],
+          liveEvents: [
+            { title: "Spring Blossom Comedy", badge: "Comedy", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd6a?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Broadway Spring Gala", badge: "Plays", image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Park Outdoor Cinema", badge: "Cinema", image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Flea & Spring Craft Market", badge: "Markets", image: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Colors Dance Carnival", badge: "Festivals", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Spring Musicals Tour", badge: "Plays", image: "https://images.unsplash.com/photo-1460881680858-30d872d5b530?auto=format&fit=crop&w=400&h=500&q=80" }
+          ],
+          premieres: [
+            { title: "Love in Bloom", lang: "Hindi / Romance", image: "https://images.unsplash.com/photo-1518173946687-a4c8a383392f?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Secrets of the Himalayas", lang: "English / Nature", image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "Vengeance of the Ronin", lang: "English / Action", image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&h=600&q=80" },
+            { title: "The Inventor's Journey", lang: "Hindi / Biography", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&h=600&q=80" }
+          ],
+          musicStudio: [
+            { title: "Spring Acoustic Harmonies", artist: "The Bloom Trio", image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Electronic Spring Break", artist: "DJ Wave", image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Blossom Jazz & Cabernet", artist: "Jazz Quartet", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "String Orchestral Symphony", artist: "Camerata Spring", image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Sun-Kissed Pop Festival", artist: "The Springers", image: "https://images.unsplash.com/photo-1487180142328-0c4e37023af5?auto=format&fit=crop&w=400&h=500&q=80" },
+            { title: "Lofi Garden Sessions", artist: "DJ Sprout", image: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=400&h=500&q=80" }
+          ]
+        }
+      };
+
+      function getActiveTheme() {
+        const today = new Date();
+        const month = today.getMonth(); // 0 = Jan, 1 = Feb, ..., 11 = Dec
+        
+        // Monsoon/Summer: May, June, July, August (4, 5, 6, 7)
+        if (month >= 4 && month <= 7) {
+          return 'monsoon';
+        }
+        // Autumn: September, October, November (8, 9, 10)
+        else if (month >= 8 && month <= 10) {
+          return 'autumn';
+        }
+        // Winter: December, January, February (11, 0, 1)
+        else if (month === 11 || month === 0 || month === 1) {
+          return 'winter';
+        }
+        // Spring: March, April (2, 3)
+        else {
+          return 'spring';
+        }
+      }
+
+      const activeThemeKey = getActiveTheme();
+      const theme = seasonalThemes[activeThemeKey];
+
+      // Update Carousel
+      const carouselInner = document.querySelector('.carousel-inner');
+      if (carouselInner && theme.carousel) {
+        carouselInner.innerHTML = theme.carousel.map((slide, index) => `
+          <div class="carousel-item ${index === 0 ? 'active' : ''}">
+            <img
+              class="d-block w-100"
+              src="${slide.image}"
+              alt="${slide.title}"
+              height="350"
+              style="object-fit: cover;"
+            />
+            <div class="carousel-caption d-none d-md-block text-left">
+              <h3 class="font-weight-bold text-white mb-2" style="font-size: 24px;">${slide.title}</h3>
+              <p class="text-white-50 mb-0" style="font-size: 14px; line-height: 1.5;">${slide.desc}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update Live Events
+      const liveEventsRow = document.getElementById('live-events-row');
+      if (liveEventsRow && theme.liveEvents) {
+        liveEventsRow.innerHTML = theme.liveEvents.map(event => `
+          <div class="col-md-2 col-sm-4">
+            <div class="card h-100 position-relative">
+              <span class="badge badge-primary position-absolute m-2 px-2 py-1 font-weight-bold" style="top: 0; left: 0; font-size: 10px; border-radius: 4px; z-index: 10;">${event.badge}</span>
+              <div style="overflow: hidden; height: 200px;">
+                <img
+                  src="${event.image}"
+                  class="card-img-top w-100 h-100"
+                  alt="${event.title}"
+                />
+              </div>
+              <div class="card-body p-3 d-flex flex-column justify-content-between">
+                <h5 class="card-title text-center font-weight-bold" style="font-size: 13px; margin-bottom: 0;">${event.title}</h5>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update Premieres
+      const premiereRow = document.getElementById('premiere-row');
+      if (premiereRow && theme.premieres) {
+        premiereRow.innerHTML = theme.premieres.map(premiere => `
+          <div class="col-md-3 col-sm-6">
+            <div class="card h-100 position-relative">
+              <span class="badge badge-warning text-dark position-absolute m-2 px-2 py-1 font-weight-bold" style="top: 0; left: 0; font-size: 10px; border-radius: 4px; z-index: 10;">PREMIERE</span>
+              <div style="overflow: hidden; height: 300px;">
+                <img
+                  src="${premiere.image}"
+                  class="card-img-top w-100 h-100"
+                  alt="${premiere.title}"
+                />
+              </div>
+              <div class="card-body p-3 d-flex flex-column justify-content-between">
+                <h5 class="card-title text-center font-weight-bold" style="font-size: 14px; margin-bottom: 4px;">${premiere.title}</h5>
+                <p class="card-text text-center" style="font-size: 11px; margin-bottom: 0;">${premiere.lang}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update Music Studio
+      const musicStudioRow = document.getElementById('music-studio-row');
+      if (musicStudioRow && theme.musicStudio) {
+        musicStudioRow.innerHTML = theme.musicStudio.map(music => `
+          <div class="col-md-2 col-sm-4">
+            <div class="card h-100">
+              <div style="overflow: hidden; height: 200px;">
+                <img
+                  src="${music.image}"
+                  class="card-img-top w-100 h-100"
+                  alt="${music.title}"
+                />
+              </div>
+              <div class="card-body p-3 d-flex flex-column justify-content-between">
+                <h5 class="card-title text-center font-weight-bold" style="font-size: 13px; margin-bottom: 4px;">${music.title}</h5>
+                <p class="card-text text-center text-muted" style="font-size: 11px; margin-bottom: 0;">${music.artist}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Re-initialize hover shadow highlight for dynamically added cards
+      $(".card").hover(
+        function () {
+          $(this).addClass("shadow-lg").css("cursor", "pointer");
+        },
+        function () {
+          $(this).removeClass("shadow-lg");
+        }
+      );
+    });
+  </script>
+
+<!-- <h1>Movies</h1>
+<ul>
+    {% for movie in movies%}
+    <li>
+        <img src="{{movie.image.url}}" alt="image" >
+        <strong>{{movie.name}}</strong>{{movie.rating}}
+        <p>Cast:{{movie.cast}}</p>
+        <a href="{% url 'theater_list' movie.id %}">View Theaters</a>
+    </li>
+    {% endfor %}
+</ul> -->
+{% endblock %}
