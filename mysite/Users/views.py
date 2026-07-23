@@ -20,7 +20,7 @@ def register(request):
             return redirect('profile')
     else:
         form=UserRegisterForm()
-    return render(request,'users/register.html',{'form':form})
+    return render(request,'Users/register.html',{'form':form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -31,7 +31,7 @@ def login_view(request):
             return redirect('/')
     else:
         form=AuthenticationForm()
-    return render(request,'users/login.html',{'form':form})
+    return render(request,'Users/login.html',{'form':form})
 
 @login_required
 def profile(request):
@@ -44,7 +44,7 @@ def profile(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
 
-    return render(request, 'users/profile.html', {'u_form': u_form, 'bookings': bookings})
+    return render(request, 'Users/profile.html', {'u_form': u_form, 'bookings': bookings})
 
 @login_required
 def reset_password(request):
@@ -55,4 +55,4 @@ def reset_password(request):
             return redirect('login')
     else:
         form=PasswordChangeForm(user=request.user)
-    return render(request,'users/reset_password.html',{'form':form})
+    return render(request,'Users/reset_password.html',{'form':form})
