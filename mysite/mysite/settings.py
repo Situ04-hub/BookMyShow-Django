@@ -57,7 +57,7 @@ EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
 ROOT_URLCONF = 'mysite.urls'
-LOGIN_URL = 'login'
+LOGIN_URL = '/login/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
