@@ -83,9 +83,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import shutil
+if os.environ.get('VERCEL') == '1':
+    # Vercel filesystem is read-only. We must copy the DB to /tmp to use it.
+    db_path = '/tmp/db.sqlite3'
+    if not os.path.exists(db_path):
+        shutil.copy2(BASE_DIR / 'db.sqlite3', db_path)
+    default_db = f"sqlite:///{db_path}"
+else:
+    default_db = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=default_db,
         conn_max_age=600,
     )
 }
