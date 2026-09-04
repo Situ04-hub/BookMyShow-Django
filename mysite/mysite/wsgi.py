@@ -8,6 +8,13 @@ https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
 """
 
 import os
+import sys
+from pathlib import Path
+
+# Add the outer 'mysite' directory to sys.path so 'mysite.settings' can be found
+outer_dir = str(Path(__file__).resolve().parent.parent)
+if outer_dir not in sys.path:
+    sys.path.append(outer_dir)
 
 from django.core.wsgi import get_wsgi_application
 
