@@ -1,4 +1,11 @@
-from celery import shared_task
+try:
+    from celery import shared_task
+except ImportError:
+    # Dummy decorator if celery is not installed (e.g. on Vercel)
+    def shared_task(func=None, **kwargs):
+        if func is None:
+            return lambda f: f
+        return func
 from django.core.mail import EmailMessage
 from django.conf import settings
 from .models import Booking, SeatReservation
