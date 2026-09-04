@@ -1,5 +1,5 @@
 my_env/
-*.sqlite3
+# *.sqlite3 (uncommented to allow pushing db to Vercel)
 __pycache__/
 *.pyc
 staticfiles/
