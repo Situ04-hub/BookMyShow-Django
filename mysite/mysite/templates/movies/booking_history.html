@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-2">My Bookings</h2>
+
+<div class="movie-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));">
+    {% for booking in bookings %}
+        <div class="glass-card">
+            <div class="d-flex justify-between align-center mb-2" style="border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                <h3 style="color: var(--primary-color);">{{ booking.show.movie.name }}</h3>
+                {% if booking.payment_status == 'CONFIRMED' %}
+                    <span class="badge" style="background: #28a745;">Confirmed</span>
+                {% elif booking.payment_status == 'PENDING' %}
+                    <span class="badge" style="background: #ffc107; color: black;">Pending</span>
+                {% else %}
+                    <span class="badge" style="background: #dc3545;">{{ booking.payment_status }}</span>
+                {% endif %}
+            </div>
+            
+            <p class="mb-2"><strong>Theater:</strong> {{ booking.show.screen.theater.name }} ({{ booking.show.screen.name }})</p>
+            <p class="mb-2"><strong>Show Time:</strong> {{ booking.show.start_time|date:"d M Y, g:i A" }}</p>
+            <p class="mb-2"><strong>Booking ID:</strong> <span style="font-family: monospace;">{{ booking.booking_id }}</span></p>
+            <p class="mb-2"><strong>Amount Paid:</strong> ₹{{ booking.total_amount }}</p>
+            
+            {% if booking.payment_status == 'CONFIRMED' %}
+                <button class="btn btn-outline mt-2" style="width: 100%;" onclick="alert('In a real app, this would download the PDF ticket.')">Download Ticket</button>
+            {% elif booking.payment_status == 'PENDING' %}
+                <a href="{% url 'checkout' booking.booking_id %}" class="btn mt-2" style="width: 100%; text-align: center;">Complete Payment</a>
+            {% endif %}
+        </div>
+    {% empty %}
+        <div class="glass-card text-center" style="grid-column: 1 / -1;">
+            <p>You have no bookings yet.</p>
+            <a href="{% url 'movie_list' %}" class="btn mt-2">Browse Movies</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

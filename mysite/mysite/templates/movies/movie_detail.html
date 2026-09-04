@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="movie-detail-header mb-2" style="position: relative; border-radius: var(--radius); overflow: hidden;">
+    {% if movie.youtube_trailer_url %}
+        <div class="trailer-container" style="position: relative; padding-bottom: 30%; height: 0; overflow: hidden; max-width: 100%;">
+            <iframe src="{{ movie.youtube_trailer_url|default:'#' }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen></iframe>
+        </div>
+    {% else %}
+        <div style="height: 300px; background: linear-gradient(to right, var(--bg-color), var(--primary-color));"></div>
+    {% endif %}
+    
+    <div class="movie-detail-info glass-card" style="margin-top: -100px; position: relative; z-index: 10; margin-left: 2rem; margin-right: 2rem;">
+        <div class="d-flex" style="gap: 2rem;">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="{{ movie.name }}" style="width: 200px; border-radius: var(--radius); margin-top: -100px; box-shadow: var(--shadow);">
+            {% else %}
+                <img src="https://placehold.co/200x300/141414/f84464.png?text={{ movie.name|urlencode }}" alt="{{ movie.name }}" style="width: 200px; border-radius: var(--radius); margin-top: -100px; box-shadow: var(--shadow);">
+            {% endif %}
+            
+            <div style="flex-grow: 1;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ movie.name }}</h1>
+                <div class="movie-meta mb-2" style="font-size: 1.1rem; justify-content: flex-start; gap: 1rem;">
+                    <span class="badge" style="background: white; color: black;">★ {{ movie.average_rating }}</span>
+                    <span class="badge">{{ movie.age_certification }}</span>
+                    <span>{{ movie.duration }} mins</span>
+                    <span>{{ movie.genre }}</span>
+                    <span>{{ movie.language }}</span>
+                    <span>{{ movie.release_date|date:"d M Y" }}</span>
+                </div>
+                <p style="color: var(--text-secondary); max-width: 800px;">{{ movie.description }}</p>
+                
+                <div class="mt-2">
+                    <h4 style="margin-bottom: 0.5rem;">Cast</h4>
+                    <p>{{ movie.cast }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shows Section -->
+<div class="shows-section mt-2">
+    <h2 class="mb-2">Book Tickets</h2>
+    {% regroup shows by screen.theater as theater_shows %}
+    
+    {% for theater_group in theater_shows %}
+        <div class="glass-card mb-2">
+            <h3 style="color: var(--primary-color);">{{ theater_group.grouper.name }}</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;" class="mb-2">{{ theater_group.grouper.address }}</p>
+            
+            <div class="d-flex" style="gap: 1rem; flex-wrap: wrap;">
+                {% for show in theater_group.list %}
+                    <a href="{% url 'show_seats' show.id %}" class="btn btn-outline" style="text-align: center;">
+                        <div>{{ show.start_time|time:"g:i A" }}</div>
+                        <div style="font-size: 0.8rem;">{{ show.screen.name }}</div>
+                        <div style="font-size: 0.8rem;">₹{{ show.ticket_price }}</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="glass-card text-center">
+            <p>No shows available currently.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Reviews & Similar Movies -->
+<div class="d-flex mt-2" style="gap: 2rem;">
+    <div style="flex: 2;">
+        <h2 class="mb-2">Reviews</h2>
+        {% for review in reviews %}
+            <div class="glass-card mb-2">
+                <div class="d-flex justify-between align-center mb-2">
+                    <div>
+                        <strong>{{ review.user.username }}</strong>
+                        {% if review.is_verified_viewer %}
+                            <span class="badge" style="background: #28a745; margin-left: 0.5rem; font-size: 0.7rem;">Verified Viewer</span>
+                        {% endif %}
+                    </div>
+                    <div style="color: gold;">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary);">{{ review.text }}</p>
+                <div style="font-size: 0.8rem; color: #666; margin-top: 1rem;">
+                    Posted on {{ review.created_at|date:"d M Y" }}
+                </div>
+            </div>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+    
+    <div style="flex: 1;">
+        <h2 class="mb-2">Similar Movies</h2>
+        <div class="d-flex" style="flex-direction: column; gap: 1rem;">
+            {% for sim_movie in similar_movies %}
+                <a href="{% url 'movie_detail' sim_movie.id %}" class="glass-card d-flex" style="text-decoration: none; color: inherit; gap: 1rem; padding: 0.5rem;">
+                    {% if sim_movie.poster %}
+                        <img src="{{ sim_movie.poster.url }}" alt="{{ sim_movie.name }}" style="width: 60px; height: 80px; object-fit: cover; border-radius: 4px;">
+                    {% else %}
+                        <img src="https://placehold.co/60x80/141414/f84464.png?text={{ sim_movie.name|urlencode }}" alt="{{ sim_movie.name }}" style="width: 60px; height: 80px; object-fit: cover; border-radius: 4px;">
+                    {% endif %}
+                    <div class="d-flex align-center">
+                        <strong>{{ sim_movie.name }}</strong>
+                    </div>
+                </a>
+            {% empty %}
+                <p>No similar movies found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

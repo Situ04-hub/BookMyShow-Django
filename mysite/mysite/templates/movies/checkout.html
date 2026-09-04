@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <h2 class="text-center mb-2">Checkout</h2>
+    
+    <div class="glass-card mb-2 text-center">
+        <h3 style="color: var(--primary-color);">{{ booking.show.movie.name }}</h3>
+        <p>{{ booking.show.screen.theater.name }} | {{ booking.show.screen.name }}</p>
+        <p>{{ booking.show.start_time|date:"d M Y, g:i A" }}</p>
+        
+        <hr style="border: 1px solid var(--glass-border); margin: 1rem 0;">
+        
+        <div class="d-flex justify-between">
+            <span>Booking ID:</span>
+            <strong>{{ booking.booking_id }}</strong>
+        </div>
+        <div class="d-flex justify-between mt-2">
+            <span>Total Amount:</span>
+            <strong style="font-size: 1.5rem; color: var(--primary-color);">₹{{ booking.total_amount }}</strong>
+        </div>
+    </div>
+    
+    <button id="checkout-button" class="btn" style="width: 100%; font-size: 1.2rem; padding: 1rem;">Pay Now</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    var checkoutButton = document.getElementById('checkout-button');
+
+    checkoutButton.addEventListener('click', function() {
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = 'Redirecting...';
+        
+        fetch("{% url 'checkout' booking.booking_id %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(session) {
+            if (session.error) {
+                alert(session.error);
+                checkoutButton.disabled = false;
+                checkoutButton.textContent = 'Pay Now';
+                return;
+            }
+            if (session.success && session.redirect_url) {
+                window.location.href = session.redirect_url;
+                return;
+            }
+            return stripe.redirectToCheckout({ sessionId: session.id });
+        })
+        .then(function(result) {
+            if (result && result.error) {
+                alert(result.error.message);
+                checkoutButton.disabled = false;
+                checkoutButton.textContent = 'Pay Now';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            checkoutButton.disabled = false;
+            checkoutButton.textContent = 'Pay Now';
+        });
+    });
+</script>
+{% endblock %}

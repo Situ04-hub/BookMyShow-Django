@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookMyShow Clone{% endblock %}</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'movie_list' %}" class="brand">TicketHive</a>
+        <div class="nav-links">
+            <a href="{% url 'movie_list' %}">Movies</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'booking_history' %}">My Bookings</a>
+                {% if request.user.is_superuser %}
+                    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                    <a href="/admin/">Admin Panel</a>
+                {% endif %}
+                <a href="{% url 'logout' %}">Logout ({{ request.user.username }})</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline" style="padding: 0.4rem 1rem;">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+        {% if messages %}
+            <div class="messages mb-2">
+                {% for message in messages %}
+                    <div class="glass-card" style="border-color: var(--primary-color);">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="text-center mt-2 mb-2" style="color: var(--text-secondary);">
+        <p>&copy; 2026 TicketHive. All Rights Reserved.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

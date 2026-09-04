@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-2">
+    <h2>Admin Analytics Dashboard</h2>
+    <a href="?export=csv" class="btn btn-outline">Export CSV Report</a>
+</div>
+
+<div class="movie-grid mb-2">
+    <!-- Top Level Stats -->
+    <div class="glass-card text-center" style="border-top: 4px solid #28a745;">
+        <h3>Most Popular Movie</h3>
+        <p style="font-size: 1.5rem; font-weight: bold; margin-top: 1rem; color: var(--text-primary);">
+            {% if top_movies %}{{ top_movies.0.name }}{% else %}N/A{% endif %}
+        </p>
+    </div>
+    
+    <div class="glass-card text-center" style="border-top: 4px solid var(--primary-color);">
+        <h3>Highest Revenue Day</h3>
+        <p style="font-size: 1.5rem; font-weight: bold; margin-top: 1rem; color: var(--text-primary);">
+            {% if daily_revenue %}₹{{ daily_revenue.0.total }}{% else %}N/A{% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="d-flex" style="gap: 2rem;">
+    <!-- Revenue Chart Data -->
+    <div class="glass-card" style="flex: 2;">
+        <h3>Daily Revenue (Last 30 Days)</h3>
+        <div style="margin-top: 1rem; max-height: 400px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border);">
+                        <th style="padding: 1rem 0;">Date</th>
+                        <th style="padding: 1rem 0;">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rev in daily_revenue %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 1rem 0;">{{ rev.date|date:"d M Y" }}</td>
+                        <td style="padding: 1rem 0; color: #28a745;">₹{{ rev.total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2" class="text-center" style="padding: 1rem;">No revenue data</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Theater Occupancy -->
+    <div class="glass-card" style="flex: 1;">
+        <h3>Theater Occupancy</h3>
+        <div style="margin-top: 1rem;">
+            {% for theater in theater_stats %}
+            <div class="mb-2">
+                <div class="d-flex justify-between mb-2">
+                    <span>{{ theater.name }}</span>
+                    <span>Shows: {{ theater.total_shows }}</span>
+                </div>
+                <div style="width: 100%; background: var(--bg-color-lighter); height: 8px; border-radius: 4px; overflow: hidden;">
+                    <!-- Simple visualization -->
+                    <div style="width: {% if theater.total_shows > 0 %}{{ theater.total_bookings|default:10 }}%{% else %}0%{% endif %}; background: var(--primary-color); height: 100%;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

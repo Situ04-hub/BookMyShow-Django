@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center" style="max-width: 600px; padding: 4rem 2rem;">
+    <div style="font-size: 5rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+    <h2 class="mb-2">Payment Successful!</h2>
+    <p class="mb-2" style="color: var(--text-secondary);">Your booking (ID: {{ booking_id }}) has been confirmed. Your e-ticket is being generated and will be sent to your email shortly.</p>
+    
+    <a href="{% url 'booking_history' %}" class="btn">View My Bookings</a>
+</div>
+{% endblock %}

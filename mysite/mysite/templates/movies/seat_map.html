@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .screen-curve {
+        height: 80px;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        margin: 2rem auto 4rem auto;
+        text-align: center;
+        padding-top: 1rem;
+        color: var(--text-secondary);
+        font-weight: bold;
+        letter-spacing: 5px;
+        width: 80%;
+        box-shadow: 0 -15px 30px rgba(248, 68, 100, 0.1);
+    }
+    
+    .seat-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        overflow-x: auto;
+        max-width: 100%;
+        padding-bottom: 1rem;
+    }
+    
+    .seat-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: max-content;
+    }
+    
+    .row-label {
+        width: 30px;
+        font-weight: bold;
+        color: var(--text-secondary);
+        text-align: right;
+        margin-right: 1rem;
+    }
+    
+    .seat {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px 8px 4px 4px;
+        background: var(--bg-color-lighter);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.7rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .seat.available:hover {
+        border-color: var(--primary-color);
+        transform: scale(1.1);
+    }
+    
+    .seat.selected {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .seat.booked {
+        background: #333;
+        border-color: #222;
+        color: #555;
+        cursor: not-allowed;
+    }
+    
+    .seat.locked {
+        background: #555;
+        border-color: #444;
+        color: #777;
+        cursor: not-allowed;
+    }
+    
+    .seat-legend {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .legend-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="text-center mb-2">
+    <h2>{{ show.movie.name }}</h2>
+    <p style="color: var(--text-secondary);">{{ show.screen.theater.name }} | {{ show.screen.name }} | {{ show.start_time|date:"d M Y, g:i A" }}</p>
+</div>
+
+<div class="glass-card" style="padding: 2rem 1rem;">
+    <div class="screen-curve">SCREEN THIS WAY</div>
+    
+    <div class="seat-grid">
+        <!-- We group reservations by row using JS or template tags. For simplicity in Django template, we'll assume a basic structure. -->
+        <!-- In a real app, you'd pass a nested structure. Here we'll do a simple loop if we pre-sort them by row -->
+        
+        {% regroup reservations|dictsort:"seat.row" by seat.row as row_list %}
+        
+        {% for row in row_list %}
+        <div class="seat-row">
+            <div class="row-label">{{ row.grouper }}</div>
+            {% for res in row.list|dictsort:"seat.seat_number" %}
+                {% if res.status == 'BOOKED' %}
+                    <div class="seat booked" title="Booked">{{ res.seat.seat_number }}</div>
+                {% elif res.is_locked %}
+                    <div class="seat locked" title="Reserved (Payment Pending)">{{ res.seat.seat_number }}</div>
+                {% else %}
+                    <div class="seat available" data-id="{{ res.seat.id }}" data-num="{{ res.seat.seat_number }}" data-price="{{ show.ticket_price }}">{{ res.seat.seat_number }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="seat-legend">
+        <div class="legend-item"><div class="legend-box" style="background: var(--bg-color-lighter); border: 1px solid var(--glass-border);"></div> Available</div>
+        <div class="legend-item"><div class="legend-box" style="background: var(--primary-color);"></div> Selected</div>
+        <div class="legend-item"><div class="legend-box" style="background: #333;"></div> Booked</div>
+    </div>
+</div>
+
+<!-- Booking Summary -->
+<div class="glass-card mt-2 d-flex justify-between align-center" id="summary-card" style="display: none !important; position: sticky; bottom: 20px; z-index: 100; border-color: var(--primary-color); background: rgba(10, 10, 10, 0.95);">
+    <div>
+        <h3 id="selected-seats-text">Selected: None</h3>
+        <p style="color: var(--primary-color); font-size: 1.2rem; font-weight: bold;" id="total-price">Total: ₹0.00</p>
+    </div>
+    <button class="btn" id="book-btn">Book Tickets</button>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const seats = document.querySelectorAll('.seat.available');
+        const summaryCard = document.getElementById('summary-card');
+        const selectedText = document.getElementById('selected-seats-text');
+        const priceText = document.getElementById('total-price');
+        const bookBtn = document.getElementById('book-btn');
+        
+        let selectedSeats = [];
+        const ticketPrice = parseFloat('{{ show.ticket_price }}');
+        
+        seats.forEach(seat => {
+            seat.addEventListener('click', () => {
+                const seatId = seat.dataset.id;
+                const seatNum = seat.dataset.num;
+                
+                if (seat.classList.contains('selected')) {
+                    seat.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                } else {
+                    seat.classList.add('selected');
+                    selectedSeats.push({ id: seatId, num: seatNum });
+                }
+                
+                updateSummary();
+            });
+        });
+        
+        function updateSummary() {
+            if (selectedSeats.length > 0) {
+                summaryCard.style.setProperty('display', 'flex', 'important');
+                const seatNums = selectedSeats.map(s => s.num).join(', ');
+                selectedText.textContent = `Selected: ${seatNums}`;
+                priceText.textContent = `Total: ₹${(selectedSeats.length * ticketPrice).toFixed(2)}`;
+            } else {
+                summaryCard.style.setProperty('display', 'none', 'important');
+            }
+        }
+        
+        bookBtn.addEventListener('click', async () => {
+            if (selectedSeats.length === 0) return;
+            
+            bookBtn.disabled = true;
+            bookBtn.textContent = 'Processing...';
+            
+            const formData = new URLSearchParams();
+            selectedSeats.forEach(s => formData.append('seats', s.id));
+            
+            try {
+                const response = await fetch('{% url "show_seats" show.id %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    window.location.href = `/movies/booking/${data.booking_id}/checkout/`;
+                } else {
+                    alert(data.error || 'Something went wrong');
+                    window.location.reload();
+                }
+            } catch (err) {
+                alert('Connection error');
+                bookBtn.disabled = false;
+                bookBtn.textContent = 'Book Tickets';
+            }
+        });
+    });
+</script>
+{% endblock %}

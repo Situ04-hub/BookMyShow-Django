@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center" style="max-width: 600px; padding: 4rem 2rem;">
+    <div style="font-size: 5rem; color: #dc3545; margin-bottom: 1rem;">✗</div>
+    <h2 class="mb-2">Payment Cancelled</h2>
+    <p class="mb-2" style="color: var(--text-secondary);">Your payment for booking (ID: {{ booking_id }}) was cancelled. Any reserved seats have been released.</p>
+    
+    <a href="{% url 'movie_list' %}" class="btn">Browse Movies</a>
+</div>
+{% endblock %}
